@@ -96,6 +96,26 @@ class DateTimeTest extends TestCase
 				[],
 				//result
 				[]
+			],
+
+			[
+				[
+					new \DatePeriod(
+						new \DateTimeImmutable('2014-03-03'), new \DateInterval('P1D'), new \DateTimeImmutable('2015-05-05'),
+					),
+					new \DatePeriod(
+						new \DateTimeImmutable('2016-03-03'), new \DateInterval('P1D'), new \DateTimeImmutable('2017-05-05'),
+					),
+				],
+				//result
+				[
+					new \DatePeriod(
+						new \DateTimeImmutable('2014-03-03'), new \DateInterval('P1D'), new \DateTimeImmutable('2015-05-05'),
+					),
+					new \DatePeriod(
+						new \DateTimeImmutable('2016-03-03'), new \DateInterval('P1D'), new \DateTimeImmutable('2017-05-05'),
+					),
+				],
 			]
 		];
 	}
