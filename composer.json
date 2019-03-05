@@ -1,0 +1,16 @@
+{
+    "name": "erema/utils",
+    "require-dev": {
+        "phpunit/phpunit": "^8.0"
+    },
+    "authors": [
+        {
+            "name": "Roma Erema",
+            "email": "roma.a.erema@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {"Utils\\": "src/"}
+    }
+}
