@@ -9,7 +9,7 @@ class DateTimeTest extends TestCase
 {
 
 	/**
-	 * @dataProvider MergeOverlappingPeriodsProvider
+	 * @dataProvider mergeOverlappingPeriodsProvider
 	 * @param array $periods
 	 * @param array $resultPeriods
 	 */
@@ -23,7 +23,7 @@ class DateTimeTest extends TestCase
 	/**
 	 * @throws \Exception
 	 */
-	public static function MergeOverlappingPeriodsProvider(): array
+	public static function mergeOverlappingPeriodsProvider(): array
 	{
 		return [
 			[
@@ -116,8 +116,34 @@ class DateTimeTest extends TestCase
 						new \DateTimeImmutable('2016-03-03'), new \DateInterval('P1D'), new \DateTimeImmutable('2017-05-05'),
 					),
 				],
-			]
+			],
 		];
 	}
 
+	/**
+	 * @dataProvider finishDateCantBeLessThenStartDateProvider
+	 * @param array $periods
+	 */
+	public function testFinishDateCantBeLessThenStartDate(array $periods): void
+	{
+		$this->expectExceptionMessage('End date of period can\'t be less then start date');
+		DateTimeUtil::mergeOverlappingPeriods($periods);
+	}
+
+	/**
+	 * @return array
+	 * @throws \Exception
+	 */
+	public static function finishDateCantBeLessThenStartDateProvider(): array
+	{
+		return [
+			[
+				[
+					new \DatePeriod(
+						new \DateTimeImmutable('2009-11-01 12:27:39'), new \DateInterval('P1D'), new \DateTimeImmutable('2009-02-01 12:27:39'),
+					),
+				]
+			]
+		];
+	}
 }

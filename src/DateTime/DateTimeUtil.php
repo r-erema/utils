@@ -26,6 +26,11 @@ class DateTimeUtil
 			if ($period) {
 				$startDate = $period->getStartDate();
 				$endDate = $period->getEndDate();
+
+				if ($endDate < $startDate) {
+					throw new \RuntimeException('End date of period can\'t be less then start date');
+				}
+
 				$overlappedPeriods = array_filter($periods, function (\DatePeriod $period) use ($startDate, $endDate) {
 					return $period->getStartDate() >= $startDate && $period->getStartDate() <= $endDate;
 				});
@@ -50,7 +55,7 @@ class DateTimeUtil
 		return $result;
 	}
 
-	public static function getPeriodWithMinStartDate(array $periods): \DatePeriod
+	public static function getPeriodWithMinStartDate(array $periods): ?\DatePeriod
 	{
 		usort($periods, function (\DatePeriod $period1, \DatePeriod $period2) {
 			return $period1->getStartDate() < $period2->getStartDate() ? -1 : 1;
@@ -58,7 +63,7 @@ class DateTimeUtil
 		return array_shift($periods);
 	}
 
-	public static function getPeriodWithMaxEndDate(array $periods): \DatePeriod
+	public static function getPeriodWithMaxEndDate(array $periods): ?\DatePeriod
 	{
 		usort($periods, function (\DatePeriod $period1, \DatePeriod $period2) {
 			return $period1->getEndDate() > $period2->getEndDate() ? -1 : 1;
