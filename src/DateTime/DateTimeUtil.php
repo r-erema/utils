@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Utils\DateTime;
 
+use Utils\DateTime\Exceptions\EndDateCantBeLessThenStartDateException;
+
 class DateTimeUtil
 {
 
 	/**
 	 * @param \DatePeriod[] $periods
 	 * @return \DatePeriod[]
+	 * @throws EndDateCantBeLessThenStartDateException
 	 */
 	public static function mergeOverlappingPeriods(array $periods): array
 	{
@@ -28,27 +31,34 @@ class DateTimeUtil
 				$endDate = $period->getEndDate();
 
 				if ($endDate < $startDate) {
-					throw new \RuntimeException('End date of period can\'t be less then start date');
+					$startDateFormat = $startDate->format('Y-m-d H:i:s');
+					$endDateFormat = $endDate !== null ? $endDate->format('Y-m-d H:i:s') : 'null';
+					throw new EndDateCantBeLessThenStartDateException("Start date: {$startDateFormat}, end date: {$endDateFormat}");
 				}
 
 				$overlappedPeriods = array_filter($periods, function (\DatePeriod $period) use ($startDate, $endDate) {
 					return $period->getStartDate() >= $startDate && $period->getStartDate() <= $endDate;
 				});
 
-				$mergedPeriod = new \DatePeriod(
-					self::getPeriodWithMinStartDate($overlappedPeriods)->getStartDate(),
-					$period->getDateInterval(),
-					self::getPeriodWithMaxEndDate($overlappedPeriods)->getEndDate()
-				);
+				$periodWithMinStartDate = self::getPeriodWithMinStartDate($overlappedPeriods);
+				$periodWithMaxEndDate = self::getPeriodWithMaxEndDate($overlappedPeriods);
 
-				foreach (array_keys($overlappedPeriods) as $key) {
-					unset($periods[$key]);
-				}
+				if ($periodWithMinStartDate && $periodWithMaxEndDate) {
+					$mergedPeriod = new \DatePeriod(
+						$periodWithMinStartDate->getStartDate(),
+						$period->getDateInterval(),
+						$periodWithMaxEndDate->getEndDate()
+					);
 
-				if (count($overlappedPeriods) > 1) {
-					array_unshift($periods, $mergedPeriod);
-				} else {
-					$result[] = $mergedPeriod;
+					foreach (array_keys($overlappedPeriods) as $key) {
+						unset($periods[$key]);
+					}
+
+					if (count($overlappedPeriods) > 1) {
+						array_unshift($periods, $mergedPeriod);
+					} else {
+						$result[] = $mergedPeriod;
+					}
 				}
 			}
 		}

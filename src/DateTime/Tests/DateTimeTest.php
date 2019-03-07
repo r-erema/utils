@@ -3,7 +3,8 @@
 namespace Utils\DateTime\Tests;
 
 use PHPUnit\Framework\TestCase,
-	Utils\DateTime\DateTimeUtil;
+	Utils\DateTime\DateTimeUtil,
+	Utils\DateTime\Exceptions\EndDateCantBeLessThenStartDateException;
 
 class DateTimeTest extends TestCase
 {
@@ -12,6 +13,7 @@ class DateTimeTest extends TestCase
 	 * @dataProvider mergeOverlappingPeriodsProvider
 	 * @param array $periods
 	 * @param array $resultPeriods
+	 * @throws \Utils\DateTime\Exceptions\EndDateCantBeLessThenStartDateException
 	 */
 	public function testMergeOverlappingPeriods(array $periods, array $resultPeriods): void
 	{
@@ -123,10 +125,11 @@ class DateTimeTest extends TestCase
 	/**
 	 * @dataProvider finishDateCantBeLessThenStartDateProvider
 	 * @param array $periods
+	 * @throws \Utils\DateTime\Exceptions\EndDateCantBeLessThenStartDateException
 	 */
 	public function testFinishDateCantBeLessThenStartDate(array $periods): void
 	{
-		$this->expectExceptionMessage('End date of period can\'t be less then start date');
+		$this->expectException(EndDateCantBeLessThenStartDateException::class);
 		DateTimeUtil::mergeOverlappingPeriods($periods);
 	}
 
